@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Hours Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    table {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+      border-collapse: collapse;
+      padding: 8px;
+      text-align: center;
+    }
+    .add-row-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .add-row-btn:hover {
+      background-color: #45a049;
+    }
+    .total-hours {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Work Hours Calculator</h1>
+    <button class="add-row-btn" onclick="addRow()">Add Time Entry</button>
+
+    <table id="workHoursTable">
+      <thead>
+        <tr>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Type</th>
+          <th>Hours Worked</th>
+        </tr>
+      </thead>
+      <tbody id="timeRows">
+        <!-- Rows will be added dynamically here -->
+      </tbody>
+    </table>
+
+    <div class="total-hours">
+      Total Hours Worked: <span id="totalHours">0</span> hours
+    </div>
+  </div>
+
+  <script>
+    // Add a new row for entering time
+    function addRow() {
+      const tableBody = document.getElementById('timeRows');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td><input type="time" class="start-time" onchange="calculateHours(this)" /></td>
+        <td><input type="time" class="end-time" onchange="calculateHours(this)" /></td>
+        <td>
+          <select>
+            <option value="Regular">Regular</option>
+            <option value="Overtime">Overtime</option>
+            <option value="Break">Break</option>
+          </select>
+        </td>
+        <td class="hours-worked">0</td>
+      `;
+
+      tableBody.appendChild(row);
+    }
+
+    // Function to calculate hours between start and end times for each row
+    function calculateHours(element) {
+      const row = element.parentNode.parentNode;
+      const startTime = row.querySelector('.start-time').value;
+      const endTime = row.querySelector('.end-time').value;
+      const hoursWorkedCell = row.querySelector('.hours-worked');
+
+      if (startTime && endTime) {
+        const start = new Date(`1970-01-01T${startTime}:00`);
+        const end = new Date(`1970-01-01T${endTime}:00`);
+        const diff = (end - start) / (1000 * 60 * 60); // Difference in hours
+
+        // If end time is greater than start time
+        if (diff > 0) {
+          hoursWorkedCell.textContent = diff.toFixed(2); // Show hours worked
+          calculateTotalHours();
+        } else {
+          hoursWorkedCell.textContent = '0';
+        }
+      }
+    }
+
+    // Function to calculate total hours worked
+    function calculateTotalHours() {
+      let total = 0;
+      const rows = document.querySelectorAll('.hours-worked');
+
+      rows.forEach(cell => {
+        total += parseFloat(cell.textContent);
+      });
+
+      document.getElementById('totalHours').textContent = total.toFixed(2);
+    }
+  </script>
+
+</body>
+</html>
